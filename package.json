@@ -1,0 +1,29 @@
+{
+  "name": "agentic-coding-plan-validator",
+  "version": "0.1.0",
+  "description": "MCP tool that validates and optimizes executable coding task graphs",
+  "type": "module",
+  "bin": {
+    "agentic-coding-plan-validator": "dist/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
+    "zod": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@vitest/ui": "^5.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

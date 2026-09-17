@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "coding-plan-validator": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "src/index.ts"]
+    }
+  }
+}
