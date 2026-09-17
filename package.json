@@ -1,7 +1,7 @@
 {
   "name": "agentic-coding-plan-validator",
   "version": "0.1.0",
-  "description": "Deterministic MCP quality gate for validating coding task DAGs, realistic estimates, parallel execution, critical paths, and priorities before agent orchestration",
+  "description": "MCP tool that validates and optimizes executable coding task graphs",
   "type": "module",
   "bin": {
     "agentic-coding-plan-validator": "dist/src/index.js"
