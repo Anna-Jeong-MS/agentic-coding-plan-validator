@@ -1,0 +1,26 @@
+{
+  "source": "validate_coding_plan",
+  "validationObserved": {
+    "executable": true,
+    "waveCount": 10,
+    "criticalPath": ["t01-discovery", "t02-architecture-design", "t05-azure-infra", "t06-managed-identity-secrets", "t07-entra-auth", "t08-node-api", "t13-security-review", "t15-staged-deployment", "t16-rollback-rehearsal", "t17-production-approval"],
+    "parallelCandidateCount": 8
+  },
+  "sessions": [
+    { "sessionId": "sess-01", "agentRole": "discovery-analyst", "wave": 0, "taskIds": ["t01-discovery"], "blockedBySessionIds": [], "validationEvidence": "Critical-path head and prerequisite for all downstream work; start immediately." },
+    { "sessionId": "sess-02", "agentRole": "solution-architect", "wave": 1, "taskIds": ["t02-architecture-design"], "blockedBySessionIds": ["sess-01"], "validationEvidence": "Critical-path wave 1 task; completes before the wave 2 fan-out." },
+    { "sessionId": "sess-03", "agentRole": "azure-platform-engineer", "wave": 2, "taskIds": ["t05-azure-infra"], "blockedBySessionIds": ["sess-02"], "validationEvidence": "Critical-path task isolated on azure-subscription; parallel with sessions 04 and 05." },
+    { "sessionId": "sess-04", "agentRole": "security-engineer", "wave": 2, "taskIds": ["t04-threat-model"], "blockedBySessionIds": ["sess-02"], "validationEvidence": "MCP parallel candidate with schema design and Azure infrastructure." },
+    { "sessionId": "sess-05", "agentRole": "data-engineer", "wave": 2, "taskIds": ["t03-schema-design"], "blockedBySessionIds": ["sess-02"], "validationEvidence": "MCP parallel candidate; opens the SQL migration lane." },
+    { "sessionId": "sess-06", "agentRole": "azure-platform-engineer", "wave": 3, "taskIds": ["t06-managed-identity-secrets"], "blockedBySessionIds": ["sess-03", "sess-04"], "validationEvidence": "Reuses azure-subscription only after infrastructure session completes." },
+    { "sessionId": "sess-07", "agentRole": "data-engineer", "wave": 3, "taskIds": ["t10-schema-migration", "t11-data-backfill"], "blockedBySessionIds": ["sess-05"], "validationEvidence": "Runs migration then backfill sequentially because both lock sql-database." },
+    { "sessionId": "sess-08", "agentRole": "identity-engineer", "wave": 4, "taskIds": ["t07-entra-auth"], "blockedBySessionIds": ["sess-06"], "validationEvidence": "Critical-path auth task starts at its earliest validated wave." },
+    { "sessionId": "sess-09", "agentRole": "backend-engineer", "wave": 5, "taskIds": ["t08-node-api"], "blockedBySessionIds": ["sess-08", "sess-05"], "validationEvidence": "Critical-path API work runs concurrently with the React session." },
+    { "sessionId": "sess-10", "agentRole": "frontend-engineer", "wave": 5, "taskIds": ["t09-react-admin-ui"], "blockedBySessionIds": ["sess-08"], "validationEvidence": "MCP marks UI and API as parallel candidates with no shared resource." },
+    { "sessionId": "sess-11", "agentRole": "staging-validation-engineer", "wave": 6, "taskIds": ["t13-security-review", "t12-load-tests"], "blockedBySessionIds": ["sess-09", "sess-10", "sess-07"], "validationEvidence": "Security review runs before load tests; both serialize on staging-environment." },
+    { "sessionId": "sess-12", "agentRole": "technical-writer", "wave": 6, "taskIds": ["t14-docs-runbooks"], "blockedBySessionIds": ["sess-09", "sess-10", "sess-07"], "validationEvidence": "Documentation runs in parallel with the staging validation lane." },
+    { "sessionId": "sess-13", "agentRole": "release-engineer", "wave": 7, "taskIds": ["t15-staged-deployment", "t16-rollback-rehearsal"], "blockedBySessionIds": ["sess-11"], "validationEvidence": "Critical-path deployment and rollback run sequentially on production-environment." },
+    { "sessionId": "sess-14", "agentRole": "release-approver", "wave": 9, "taskIds": ["t17-production-approval"], "blockedBySessionIds": ["sess-11", "sess-12", "sess-13"], "validationEvidence": "Terminal approval waits for security, documentation, deployment, and rollback evidence." }
+  ],
+  "assignmentRationale": "The execution-coordinator LLM read the live MCP response before assignment. It preserved all 10 dependency waves, prioritized the computed critical path, used the 8 parallel candidates, and serialized sessions sharing exclusive resources."
+}

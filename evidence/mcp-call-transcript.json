@@ -1,0 +1,867 @@
+{
+  "evidenceType": "live-mcp-json-rpc-call",
+  "startedAt": "2026-09-17T14:34:46.530Z",
+  "completedAt": "2026-09-17T14:34:54.829Z",
+  "serverCommand": "npx --yes node@22 node_modules/tsx/dist/cli.mjs src/index.ts",
+  "discoveredTool": {
+    "name": "validate_coding_plan",
+    "description": "Validate a coding task DAG, estimates, dependencies, parallel candidates, critical path, and execution priority.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "goal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tasks": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "discovery",
+                  "design",
+                  "implementation",
+                  "test",
+                  "infrastructure",
+                  "data",
+                  "security",
+                  "deployment",
+                  "review",
+                  "documentation",
+                  "approval",
+                  "custom"
+                ]
+              },
+              "estimate": {
+                "type": "object",
+                "properties": {
+                  "optimisticMinutes": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "likelyMinutes": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "pessimisticMinutes": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "confidence": {
+                    "default": "medium",
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  },
+                  "minimumRealisticMinutes": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "evidence": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "optimisticMinutes",
+                  "likelyMinutes",
+                  "pessimisticMinutes"
+                ]
+              },
+              "dependsOn": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "exclusiveResources": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "category",
+              "estimate"
+            ]
+          }
+        }
+      },
+      "required": [
+        "goal",
+        "tasks"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    }
+  },
+  "request": {
+    "name": "validate_coding_plan",
+    "arguments": {
+      "goal": "Build and release a multi-tenant SaaS feature with Entra ID authentication, React admin UI, Node API, tenant-isolated SQL schema migration and backfill, Azure infrastructure, managed identity and secrets, security review, load tests, staged deployment, rollback rehearsal, documentation, and production approval.",
+      "tasks": [
+        {
+          "id": "t01-discovery",
+          "title": "Requirements and multi-tenant isolation discovery",
+          "category": "discovery",
+          "estimate": {
+            "optimisticMinutes": 240,
+            "likelyMinutes": 480,
+            "pessimisticMinutes": 960,
+            "confidence": "medium",
+            "evidence": "Cross-team workshops to define tenant isolation model, compliance, and SLAs"
+          },
+          "dependsOn": [],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t02-architecture-design",
+          "title": "Solution architecture and API contract design",
+          "category": "design",
+          "estimate": {
+            "optimisticMinutes": 300,
+            "likelyMinutes": 600,
+            "pessimisticMinutes": 1200,
+            "confidence": "medium",
+            "evidence": "Define service boundaries, auth flows, and OpenAPI contracts"
+          },
+          "dependsOn": [
+            "t01-discovery"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t03-schema-design",
+          "title": "Tenant-isolated SQL schema design",
+          "category": "design",
+          "estimate": {
+            "optimisticMinutes": 240,
+            "likelyMinutes": 420,
+            "pessimisticMinutes": 900,
+            "confidence": "medium",
+            "evidence": "Row-level security vs schema-per-tenant tradeoff, indexing"
+          },
+          "dependsOn": [
+            "t01-discovery",
+            "t02-architecture-design"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t04-threat-model",
+          "title": "Threat model and security requirements",
+          "category": "security",
+          "estimate": {
+            "optimisticMinutes": 180,
+            "likelyMinutes": 360,
+            "pessimisticMinutes": 720,
+            "confidence": "medium",
+            "evidence": "STRIDE analysis for multi-tenant boundaries and Entra ID"
+          },
+          "dependsOn": [
+            "t02-architecture-design"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t05-azure-infra",
+          "title": "Azure infrastructure provisioning (IaC)",
+          "category": "infrastructure",
+          "estimate": {
+            "optimisticMinutes": 360,
+            "likelyMinutes": 720,
+            "pessimisticMinutes": 1440,
+            "confidence": "low",
+            "evidence": "Bicep for App Service, Azure SQL, VNet, Key Vault"
+          },
+          "dependsOn": [
+            "t02-architecture-design"
+          ],
+          "exclusiveResources": [
+            "azure-subscription"
+          ]
+        },
+        {
+          "id": "t06-managed-identity-secrets",
+          "title": "Managed identity and Key Vault secrets configuration",
+          "category": "security",
+          "estimate": {
+            "optimisticMinutes": 180,
+            "likelyMinutes": 360,
+            "pessimisticMinutes": 720,
+            "confidence": "medium",
+            "evidence": "System-assigned identities, RBAC, secret references"
+          },
+          "dependsOn": [
+            "t05-azure-infra",
+            "t04-threat-model"
+          ],
+          "exclusiveResources": [
+            "azure-subscription"
+          ]
+        },
+        {
+          "id": "t07-entra-auth",
+          "title": "Entra ID authentication and authorization integration",
+          "category": "implementation",
+          "estimate": {
+            "optimisticMinutes": 360,
+            "likelyMinutes": 720,
+            "pessimisticMinutes": 1440,
+            "confidence": "medium",
+            "evidence": "OIDC, multi-tenant app registration, token validation"
+          },
+          "dependsOn": [
+            "t02-architecture-design",
+            "t06-managed-identity-secrets"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t08-node-api",
+          "title": "Node API implementation with tenant scoping",
+          "category": "implementation",
+          "estimate": {
+            "optimisticMinutes": 600,
+            "likelyMinutes": 1200,
+            "pessimisticMinutes": 2400,
+            "confidence": "medium",
+            "evidence": "REST endpoints, per-tenant data access enforcement"
+          },
+          "dependsOn": [
+            "t03-schema-design",
+            "t07-entra-auth"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t09-react-admin-ui",
+          "title": "React admin UI implementation",
+          "category": "implementation",
+          "estimate": {
+            "optimisticMinutes": 600,
+            "likelyMinutes": 1080,
+            "pessimisticMinutes": 2160,
+            "confidence": "medium",
+            "evidence": "Admin dashboards, MSAL sign-in, tenant management screens"
+          },
+          "dependsOn": [
+            "t07-entra-auth"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t10-schema-migration",
+          "title": "SQL schema migration scripts",
+          "category": "data",
+          "estimate": {
+            "optimisticMinutes": 240,
+            "likelyMinutes": 480,
+            "pessimisticMinutes": 960,
+            "confidence": "medium",
+            "evidence": "Idempotent, transactional migration with tenant partitioning"
+          },
+          "dependsOn": [
+            "t03-schema-design"
+          ],
+          "exclusiveResources": [
+            "sql-database"
+          ]
+        },
+        {
+          "id": "t11-data-backfill",
+          "title": "Tenant data backfill and validation",
+          "category": "data",
+          "estimate": {
+            "optimisticMinutes": 300,
+            "likelyMinutes": 600,
+            "pessimisticMinutes": 1440,
+            "confidence": "low",
+            "evidence": "Batched backfill with row counts and integrity checks"
+          },
+          "dependsOn": [
+            "t10-schema-migration"
+          ],
+          "exclusiveResources": [
+            "sql-database"
+          ]
+        },
+        {
+          "id": "t12-load-tests",
+          "title": "Load and performance testing",
+          "category": "test",
+          "estimate": {
+            "optimisticMinutes": 300,
+            "likelyMinutes": 600,
+            "pessimisticMinutes": 1200,
+            "confidence": "medium",
+            "evidence": "k6 scenarios against staging, per-tenant throughput targets"
+          },
+          "dependsOn": [
+            "t08-node-api",
+            "t09-react-admin-ui",
+            "t11-data-backfill"
+          ],
+          "exclusiveResources": [
+            "staging-environment"
+          ]
+        },
+        {
+          "id": "t13-security-review",
+          "title": "Security review and penetration testing",
+          "category": "review",
+          "estimate": {
+            "optimisticMinutes": 360,
+            "likelyMinutes": 720,
+            "pessimisticMinutes": 1440,
+            "confidence": "medium",
+            "evidence": "Tenant isolation verification, auth bypass and OWASP checks"
+          },
+          "dependsOn": [
+            "t08-node-api",
+            "t09-react-admin-ui",
+            "t11-data-backfill"
+          ],
+          "exclusiveResources": [
+            "staging-environment"
+          ]
+        },
+        {
+          "id": "t14-docs-runbooks",
+          "title": "Documentation and operational runbooks",
+          "category": "documentation",
+          "estimate": {
+            "optimisticMinutes": 240,
+            "likelyMinutes": 480,
+            "pessimisticMinutes": 900,
+            "confidence": "high",
+            "evidence": "API docs, onboarding guide, incident and rollback runbooks"
+          },
+          "dependsOn": [
+            "t08-node-api",
+            "t09-react-admin-ui",
+            "t10-schema-migration"
+          ],
+          "exclusiveResources": []
+        },
+        {
+          "id": "t15-staged-deployment",
+          "title": "Staged canary deployment to production",
+          "category": "deployment",
+          "estimate": {
+            "optimisticMinutes": 240,
+            "likelyMinutes": 540,
+            "pessimisticMinutes": 1200,
+            "confidence": "low",
+            "evidence": "Blue-green/canary rollout with gated health checks"
+          },
+          "dependsOn": [
+            "t12-load-tests",
+            "t13-security-review"
+          ],
+          "exclusiveResources": [
+            "production-environment"
+          ]
+        },
+        {
+          "id": "t16-rollback-rehearsal",
+          "title": "Rollback rehearsal and DR drill",
+          "category": "deployment",
+          "estimate": {
+            "optimisticMinutes": 180,
+            "likelyMinutes": 360,
+            "pessimisticMinutes": 720,
+            "confidence": "medium",
+            "evidence": "Validate rollback of code and reversible data migration"
+          },
+          "dependsOn": [
+            "t15-staged-deployment"
+          ],
+          "exclusiveResources": [
+            "production-environment"
+          ]
+        },
+        {
+          "id": "t17-production-approval",
+          "title": "Production go-live approval",
+          "category": "approval",
+          "estimate": {
+            "optimisticMinutes": 60,
+            "likelyMinutes": 180,
+            "pessimisticMinutes": 480,
+            "confidence": "medium",
+            "evidence": "Sign-off gate requiring security, load, docs, and rollback evidence"
+          },
+          "dependsOn": [
+            "t13-security-review",
+            "t14-docs-runbooks",
+            "t15-staged-deployment",
+            "t16-rollback-rehearsal"
+          ],
+          "exclusiveResources": []
+        }
+      ]
+    }
+  },
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"executable\": true,\n  \"issues\": [\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t01-discovery\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t02-architecture-design\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t04-threat-model\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t05-azure-infra\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t06-managed-identity-secrets\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t07-entra-auth\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t08-node-api\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t10-schema-migration\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t11-data-backfill\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t12-load-tests\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t13-security-review\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t15-staged-deployment\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t16-rollback-rehearsal\",\n      \"message\": \"Split the task or add a discovery task.\"\n    },\n    {\n      \"severity\": \"warning\",\n      \"code\": \"HIGH_UNCERTAINTY\",\n      \"taskId\": \"t17-production-approval\",\n      \"message\": \"Split the task or add a discovery task.\"\n    }\n  ],\n  \"executionWaves\": [\n    [\n      \"t01-discovery\"\n    ],\n    [\n      \"t02-architecture-design\"\n    ],\n    [\n      \"t03-schema-design\",\n      \"t04-threat-model\",\n      \"t05-azure-infra\"\n    ],\n    [\n      \"t06-managed-identity-secrets\",\n      \"t10-schema-migration\"\n    ],\n    [\n      \"t07-entra-auth\",\n      \"t11-data-backfill\"\n    ],\n    [\n      \"t08-node-api\",\n      \"t09-react-admin-ui\"\n    ],\n    [\n      \"t12-load-tests\",\n      \"t13-security-review\",\n      \"t14-docs-runbooks\"\n    ],\n    [\n      \"t15-staged-deployment\"\n    ],\n    [\n      \"t16-rollback-rehearsal\"\n    ],\n    [\n      \"t17-production-approval\"\n    ]\n  ],\n  \"parallelCandidates\": [\n    {\n      \"taskIds\": [\n        \"t03-schema-design\",\n        \"t04-threat-model\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t03-schema-design\",\n        \"t05-azure-infra\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t04-threat-model\",\n        \"t05-azure-infra\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t06-managed-identity-secrets\",\n        \"t10-schema-migration\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t07-entra-auth\",\n        \"t11-data-backfill\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t08-node-api\",\n        \"t09-react-admin-ui\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t12-load-tests\",\n        \"t14-docs-runbooks\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    },\n    {\n      \"taskIds\": [\n        \"t13-security-review\",\n        \"t14-docs-runbooks\"\n      ],\n      \"reason\": \"No dependency path or shared exclusive resource.\"\n    }\n  ],\n  \"criticalPath\": [\n    \"t01-discovery\",\n    \"t02-architecture-design\",\n    \"t05-azure-infra\",\n    \"t06-managed-identity-secrets\",\n    \"t07-entra-auth\",\n    \"t08-node-api\",\n    \"t13-security-review\",\n    \"t15-staged-deployment\",\n    \"t16-rollback-rehearsal\",\n    \"t17-production-approval\"\n  ],\n  \"lowerBoundElapsedMinutes\": 6400,\n  \"serialEffortMinutes\": 10810,\n  \"schedule\": [\n    {\n      \"taskId\": \"t01-discovery\",\n      \"wave\": 0,\n      \"expectedMinutes\": 520,\n      \"effectiveMinutes\": 520,\n      \"earliestStartMinutes\": 0,\n      \"earliestFinishMinutes\": 520,\n      \"priorityScore\": 6560,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 16 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t02-architecture-design\",\n      \"wave\": 1,\n      \"expectedMinutes\": 650,\n      \"effectiveMinutes\": 650,\n      \"earliestStartMinutes\": 520,\n      \"earliestFinishMinutes\": 1170,\n      \"priorityScore\": 6030,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 15 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t05-azure-infra\",\n      \"wave\": 2,\n      \"expectedMinutes\": 780,\n      \"effectiveMinutes\": 780,\n      \"earliestStartMinutes\": 1170,\n      \"earliestFinishMinutes\": 1950,\n      \"priorityScore\": 5330,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 10 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t04-threat-model\",\n      \"wave\": 2,\n      \"expectedMinutes\": 390,\n      \"effectiveMinutes\": 390,\n      \"earliestStartMinutes\": 1170,\n      \"earliestFinishMinutes\": 1560,\n      \"priorityScore\": 4940,\n      \"priorityReasons\": [\n        \"prerequisite for 10 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t03-schema-design\",\n      \"wave\": 2,\n      \"expectedMinutes\": 470,\n      \"effectiveMinutes\": 470,\n      \"earliestStartMinutes\": 1170,\n      \"earliestFinishMinutes\": 1640,\n      \"priorityScore\": 3840,\n      \"priorityReasons\": [\n        \"prerequisite for 9 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t06-managed-identity-secrets\",\n      \"wave\": 3,\n      \"expectedMinutes\": 390,\n      \"effectiveMinutes\": 390,\n      \"earliestStartMinutes\": 1950,\n      \"earliestFinishMinutes\": 2340,\n      \"priorityScore\": 4540,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 9 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t10-schema-migration\",\n      \"wave\": 3,\n      \"expectedMinutes\": 520,\n      \"effectiveMinutes\": 520,\n      \"earliestStartMinutes\": 1640,\n      \"earliestFinishMinutes\": 2160,\n      \"priorityScore\": 3260,\n      \"priorityReasons\": [\n        \"prerequisite for 7 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t07-entra-auth\",\n      \"wave\": 4,\n      \"expectedMinutes\": 780,\n      \"effectiveMinutes\": 780,\n      \"earliestStartMinutes\": 2340,\n      \"earliestFinishMinutes\": 3120,\n      \"priorityScore\": 4140,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 8 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t11-data-backfill\",\n      \"wave\": 4,\n      \"expectedMinutes\": 690,\n      \"effectiveMinutes\": 690,\n      \"earliestStartMinutes\": 2160,\n      \"earliestFinishMinutes\": 2850,\n      \"priorityScore\": 2720,\n      \"priorityReasons\": [\n        \"prerequisite for 5 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t08-node-api\",\n      \"wave\": 5,\n      \"expectedMinutes\": 1300,\n      \"effectiveMinutes\": 1300,\n      \"earliestStartMinutes\": 3120,\n      \"earliestFinishMinutes\": 4420,\n      \"priorityScore\": 3340,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 6 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t09-react-admin-ui\",\n      \"wave\": 5,\n      \"expectedMinutes\": 1180,\n      \"effectiveMinutes\": 1180,\n      \"earliestStartMinutes\": 3120,\n      \"earliestFinishMinutes\": 4300,\n      \"priorityScore\": 3220,\n      \"priorityReasons\": [\n        \"prerequisite for 6 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t13-security-review\",\n      \"wave\": 6,\n      \"expectedMinutes\": 780,\n      \"effectiveMinutes\": 780,\n      \"earliestStartMinutes\": 4420,\n      \"earliestFinishMinutes\": 5200,\n      \"priorityScore\": 2010,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 3 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t12-load-tests\",\n      \"wave\": 6,\n      \"expectedMinutes\": 650,\n      \"effectiveMinutes\": 650,\n      \"earliestStartMinutes\": 4420,\n      \"earliestFinishMinutes\": 5070,\n      \"priorityScore\": 1880,\n      \"priorityReasons\": [\n        \"prerequisite for 3 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t14-docs-runbooks\",\n      \"wave\": 6,\n      \"expectedMinutes\": 510,\n      \"effectiveMinutes\": 510,\n      \"earliestStartMinutes\": 4420,\n      \"earliestFinishMinutes\": 4930,\n      \"priorityScore\": 730,\n      \"priorityReasons\": [\n        \"prerequisite for 1 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t15-staged-deployment\",\n      \"wave\": 7,\n      \"expectedMinutes\": 600,\n      \"effectiveMinutes\": 600,\n      \"earliestStartMinutes\": 5200,\n      \"earliestFinishMinutes\": 5800,\n      \"priorityScore\": 1220,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 2 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t16-rollback-rehearsal\",\n      \"wave\": 8,\n      \"expectedMinutes\": 390,\n      \"effectiveMinutes\": 390,\n      \"earliestStartMinutes\": 5800,\n      \"earliestFinishMinutes\": 6190,\n      \"priorityScore\": 610,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"prerequisite for 1 downstream task(s)\",\n        \"long-running task\"\n      ]\n    },\n    {\n      \"taskId\": \"t17-production-approval\",\n      \"wave\": 9,\n      \"expectedMinutes\": 210,\n      \"effectiveMinutes\": 210,\n      \"earliestStartMinutes\": 6190,\n      \"earliestFinishMinutes\": 6400,\n      \"priorityScore\": 210,\n      \"priorityReasons\": [\n        \"critical path\",\n        \"long-running task\"\n      ]\n    }\n  ]\n}"
+      }
+    ],
+    "structuredContent": {
+      "executable": true,
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t01-discovery",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t02-architecture-design",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t04-threat-model",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t05-azure-infra",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t06-managed-identity-secrets",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t07-entra-auth",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t08-node-api",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t10-schema-migration",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t11-data-backfill",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t12-load-tests",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t13-security-review",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t15-staged-deployment",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t16-rollback-rehearsal",
+          "message": "Split the task or add a discovery task."
+        },
+        {
+          "severity": "warning",
+          "code": "HIGH_UNCERTAINTY",
+          "taskId": "t17-production-approval",
+          "message": "Split the task or add a discovery task."
+        }
+      ],
+      "executionWaves": [
+        [
+          "t01-discovery"
+        ],
+        [
+          "t02-architecture-design"
+        ],
+        [
+          "t03-schema-design",
+          "t04-threat-model",
+          "t05-azure-infra"
+        ],
+        [
+          "t06-managed-identity-secrets",
+          "t10-schema-migration"
+        ],
+        [
+          "t07-entra-auth",
+          "t11-data-backfill"
+        ],
+        [
+          "t08-node-api",
+          "t09-react-admin-ui"
+        ],
+        [
+          "t12-load-tests",
+          "t13-security-review",
+          "t14-docs-runbooks"
+        ],
+        [
+          "t15-staged-deployment"
+        ],
+        [
+          "t16-rollback-rehearsal"
+        ],
+        [
+          "t17-production-approval"
+        ]
+      ],
+      "parallelCandidates": [
+        {
+          "taskIds": [
+            "t03-schema-design",
+            "t04-threat-model"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t03-schema-design",
+            "t05-azure-infra"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t04-threat-model",
+            "t05-azure-infra"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t06-managed-identity-secrets",
+            "t10-schema-migration"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t07-entra-auth",
+            "t11-data-backfill"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t08-node-api",
+            "t09-react-admin-ui"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t12-load-tests",
+            "t14-docs-runbooks"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        },
+        {
+          "taskIds": [
+            "t13-security-review",
+            "t14-docs-runbooks"
+          ],
+          "reason": "No dependency path or shared exclusive resource."
+        }
+      ],
+      "criticalPath": [
+        "t01-discovery",
+        "t02-architecture-design",
+        "t05-azure-infra",
+        "t06-managed-identity-secrets",
+        "t07-entra-auth",
+        "t08-node-api",
+        "t13-security-review",
+        "t15-staged-deployment",
+        "t16-rollback-rehearsal",
+        "t17-production-approval"
+      ],
+      "lowerBoundElapsedMinutes": 6400,
+      "serialEffortMinutes": 10810,
+      "schedule": [
+        {
+          "taskId": "t01-discovery",
+          "wave": 0,
+          "expectedMinutes": 520,
+          "effectiveMinutes": 520,
+          "earliestStartMinutes": 0,
+          "earliestFinishMinutes": 520,
+          "priorityScore": 6560,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 16 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t02-architecture-design",
+          "wave": 1,
+          "expectedMinutes": 650,
+          "effectiveMinutes": 650,
+          "earliestStartMinutes": 520,
+          "earliestFinishMinutes": 1170,
+          "priorityScore": 6030,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 15 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t05-azure-infra",
+          "wave": 2,
+          "expectedMinutes": 780,
+          "effectiveMinutes": 780,
+          "earliestStartMinutes": 1170,
+          "earliestFinishMinutes": 1950,
+          "priorityScore": 5330,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 10 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t04-threat-model",
+          "wave": 2,
+          "expectedMinutes": 390,
+          "effectiveMinutes": 390,
+          "earliestStartMinutes": 1170,
+          "earliestFinishMinutes": 1560,
+          "priorityScore": 4940,
+          "priorityReasons": [
+            "prerequisite for 10 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t03-schema-design",
+          "wave": 2,
+          "expectedMinutes": 470,
+          "effectiveMinutes": 470,
+          "earliestStartMinutes": 1170,
+          "earliestFinishMinutes": 1640,
+          "priorityScore": 3840,
+          "priorityReasons": [
+            "prerequisite for 9 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t06-managed-identity-secrets",
+          "wave": 3,
+          "expectedMinutes": 390,
+          "effectiveMinutes": 390,
+          "earliestStartMinutes": 1950,
+          "earliestFinishMinutes": 2340,
+          "priorityScore": 4540,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 9 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t10-schema-migration",
+          "wave": 3,
+          "expectedMinutes": 520,
+          "effectiveMinutes": 520,
+          "earliestStartMinutes": 1640,
+          "earliestFinishMinutes": 2160,
+          "priorityScore": 3260,
+          "priorityReasons": [
+            "prerequisite for 7 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t07-entra-auth",
+          "wave": 4,
+          "expectedMinutes": 780,
+          "effectiveMinutes": 780,
+          "earliestStartMinutes": 2340,
+          "earliestFinishMinutes": 3120,
+          "priorityScore": 4140,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 8 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t11-data-backfill",
+          "wave": 4,
+          "expectedMinutes": 690,
+          "effectiveMinutes": 690,
+          "earliestStartMinutes": 2160,
+          "earliestFinishMinutes": 2850,
+          "priorityScore": 2720,
+          "priorityReasons": [
+            "prerequisite for 5 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t08-node-api",
+          "wave": 5,
+          "expectedMinutes": 1300,
+          "effectiveMinutes": 1300,
+          "earliestStartMinutes": 3120,
+          "earliestFinishMinutes": 4420,
+          "priorityScore": 3340,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 6 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t09-react-admin-ui",
+          "wave": 5,
+          "expectedMinutes": 1180,
+          "effectiveMinutes": 1180,
+          "earliestStartMinutes": 3120,
+          "earliestFinishMinutes": 4300,
+          "priorityScore": 3220,
+          "priorityReasons": [
+            "prerequisite for 6 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t13-security-review",
+          "wave": 6,
+          "expectedMinutes": 780,
+          "effectiveMinutes": 780,
+          "earliestStartMinutes": 4420,
+          "earliestFinishMinutes": 5200,
+          "priorityScore": 2010,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 3 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t12-load-tests",
+          "wave": 6,
+          "expectedMinutes": 650,
+          "effectiveMinutes": 650,
+          "earliestStartMinutes": 4420,
+          "earliestFinishMinutes": 5070,
+          "priorityScore": 1880,
+          "priorityReasons": [
+            "prerequisite for 3 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t14-docs-runbooks",
+          "wave": 6,
+          "expectedMinutes": 510,
+          "effectiveMinutes": 510,
+          "earliestStartMinutes": 4420,
+          "earliestFinishMinutes": 4930,
+          "priorityScore": 730,
+          "priorityReasons": [
+            "prerequisite for 1 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t15-staged-deployment",
+          "wave": 7,
+          "expectedMinutes": 600,
+          "effectiveMinutes": 600,
+          "earliestStartMinutes": 5200,
+          "earliestFinishMinutes": 5800,
+          "priorityScore": 1220,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 2 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t16-rollback-rehearsal",
+          "wave": 8,
+          "expectedMinutes": 390,
+          "effectiveMinutes": 390,
+          "earliestStartMinutes": 5800,
+          "earliestFinishMinutes": 6190,
+          "priorityScore": 610,
+          "priorityReasons": [
+            "critical path",
+            "prerequisite for 1 downstream task(s)",
+            "long-running task"
+          ]
+        },
+        {
+          "taskId": "t17-production-approval",
+          "wave": 9,
+          "expectedMinutes": 210,
+          "effectiveMinutes": 210,
+          "earliestStartMinutes": 6190,
+          "earliestFinishMinutes": 6400,
+          "priorityScore": 210,
+          "priorityReasons": [
+            "critical path",
+            "long-running task"
+          ]
+        }
+      ]
+    }
+  }
+}

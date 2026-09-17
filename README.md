@@ -137,6 +137,12 @@ npm run dev
 npx @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
 
+## 결과 샘플
+
+[GitHub Pages에서 LLM 계획 생성 → MCP 검증 → 세션 배정 결과 보기](https://anna-jeong-ms.github.io/agentic-coding-plan-validator/)
+
+샘플은 실제 실행에서 저장한 JSON을 읽어 렌더링합니다. 페이지 소스와 입력 데이터는 [evidence/index.html](evidence/index.html)에서 확인할 수 있습니다.
+
 ## 현재 범위
 
 현재 MVP는 무제한 작업자 기준의 최소 경과 시간을 계산합니다. 작업자 수, 비용, 작업 시간대, 외부 시스템의 실제 상태를 반영하는 자원 제약 스케줄링과 이력 기반 추정 보정은 다음 단계입니다.
