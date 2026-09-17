@@ -3,3 +3,6 @@ dist/
 coverage/
 .vitest/
 *.log
+evidence/
+scripts/capture-mcp-call.ts
+test-results.png
