@@ -52,4 +52,33 @@ describe('analyzePlan', () => {
     expect(result.executable).toBe(false);
     expect(result.issues.map((issue) => issue.code)).toContain('DEPENDENCY_CYCLE');
   });
+
+  it('serializes tasks sharing an exclusive resource in the resource-aware makespan', () => {
+    const result = analyzePlan({
+      goal: 'Two tasks lock the same database',
+      tasks: [
+        { id: 'migrate', title: 'Migrate schema', category: 'data', estimate: estimate(30), dependsOn: [], exclusiveResources: ['db'] },
+        { id: 'backfill', title: 'Backfill data', category: 'data', estimate: estimate(30), dependsOn: [], exclusiveResources: ['db'] }
+      ]
+    });
+    expect(result.lowerBoundElapsedMinutes).toBe(31);
+    expect(result.resourceAdjustedElapsedMinutes).toBe(62);
+    expect(result.issues.map((issue) => issue.code)).toContain('RESOURCE_CONTENTION');
+    expect(result.parallelCandidates).toHaveLength(0);
+    const later = result.schedule.find((task) => task.resourceStartMinutes === 31);
+    expect(later).toBeDefined();
+  });
+
+  it('finds a cross-wave parallel candidate when execution windows overlap', () => {
+    const result = analyzePlan({
+      goal: 'A long task overlaps a downstream short task',
+      tasks: [
+        { id: 'a-long', title: 'Long build', category: 'implementation', estimate: estimate(60), dependsOn: [], exclusiveResources: [] },
+        { id: 'b-short', title: 'Quick probe', category: 'discovery', estimate: estimate(5), dependsOn: [], exclusiveResources: [] },
+        { id: 'c-after-b', title: 'Follow-up', category: 'implementation', estimate: estimate(5), dependsOn: ['b-short'], exclusiveResources: [] }
+      ]
+    });
+    expect(result.parallelCandidates).toContainEqual({ taskIds: ['a-long', 'c-after-b'], reason: 'No dependency path or shared exclusive resource.' });
+    expect(result.parallelCandidates).not.toContainEqual({ taskIds: ['b-short', 'c-after-b'], reason: 'No dependency path or shared exclusive resource.' });
+  });
 });
